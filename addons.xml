@@ -2,7 +2,7 @@
 <addons>
 <addon id="plugin.video.packo"
        name="PACKO"
-       version="0.5.2"
+       version="0.5.3"
        provider-name="PACKO Team">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
