@@ -68,7 +68,7 @@ def p_todos():
     #try:
     dia=horaportuguesa(True)
     
-    listacanais='RTP1,RTP2,SIC,TVI,SPTV1,SPTV2,SPTV3,SPTV4,SPTV5,SLB,SLB2,PORTO,CMTV,RTPIN,SICK,SICM,SICN,SICR,TVI24,TVIFIC,HOLLW,AXN,AXNBL,AXNWH,FOX,FOXCR,FLIFE,FOXM,SYFY,DISNY,PANDA,MOTOR,DISCV,ODISS,HIST,NGC,EURSP,FASH,VH1,MTV,ABOLA,RTPAC,RTPA,RTPM,RTPMD,BIGGS,ETVHD,DISNYJ,CHELS,CAÇAP,TOROTV,DISCT,GLOBO,TVREC,EURS2,SCP,TPA,EURN,ARTV,TRACE'
+    listacanais='JJAM,RMTV,AMC,TVC1HD,TVC2HD,TVC3HD,TVC4HD,TVSEHD,RTP1,RTP2,SIC,TVI,SPTV1,SPTV2,SPTV3,SPTV4,SPTV5,SLB,SLB2,PORTO,CMTV,RTPIN,SICK,SICM,SICN,SICR,TVI24,TVIFIC,HOLLW,AXN,AXNBL,AXNWH,FOX,FOXCR,FLIFE,FOXM,SYFY,DISNY,PANDA,MOTOR,DISCV,ODISS,HIST,NGC,EURSP,FASH,VH1,MTV,ABOLA,RTPAC,RTPA,RTPM,RTPMD,BIGGS,ETVHD,DISNYJ,CHELS,CAÇAP,TOROTV,DISCT,GLOBO,TVREC,EURS2,SCP,TPA,EURN,ARTV,TRACE'
     url='http://services.sapo.pt/EPG/GetChannelListByDateInterval?channelSiglas='+listacanais+'&startDate=' + dia +':01&endDate='+ dia + ':02'
     link=clean(abrir_url(url))
     
@@ -486,8 +486,21 @@ def listar_canais_xxx(url):
     xbmc.executebuiltin("Container.SetViewMode(500)")
 
 # addDir(name,url,mode,iconimage,total=0,pasta=True)
+def lista_canais_epg():
+    soup = getSoup('http://services.sapo.pt/EPG/GetChannelList')
+    canais = soup('channel')
+    siglas = ''
+    for canal in canais:
+        siglas += canal.sigla.text+','
+        print canal.sigla.text
+    ow = open('siglas.txt','w')
+    ow.write(siglas)
+    ow.close()
+ 
+    
 def listar_canais(url):
-
+    
+    #lista_canais_epg()
     epg = p_todos()
 
     soup = getSoup(url)
@@ -497,14 +510,15 @@ def listar_canais(url):
     #ow.close()
  
     for canal in canais:
-        # print canal
-        # addDir(canal.nome.text.encode('utf8'),canal.link.text.encode('utf8'),105,canal.logo.text.encode('utf8'),1,False)
-        #try:
-        if len(canal.epg.text) > 2:
-            canal_programa =  html_replace_clean(epg[canal.epg.text]['nomeprog'].encode('ascii', 'xmlcharrefreplace'))#descprog
-            programa_plot =  html_replace_clean(epg[canal.epg.text]['nomeprog'].encode('ascii', 'xmlcharrefreplace')) + '\n' + html_replace_clean(epg[canal.epg.text]['descprog'].encode('ascii', 'xmlcharrefreplace')) 
-        else:
-            canal_programa = ''
+
+        try:
+            if len(canal.epg.text) > 2:
+                canal_programa =  html_replace_clean(epg[canal.epg.text]['nomeprog'].encode('ascii', 'xmlcharrefreplace'))#descprog
+                programa_plot =  html_replace_clean(epg[canal.epg.text]['nomeprog'].encode('ascii', 'xmlcharrefreplace')) + '\n' + html_replace_clean(epg[canal.epg.text]['descprog'].encode('ascii', 'xmlcharrefreplace')) 
+            else:
+                canal_programa = ''
+        except:
+            pass
         if canal_programa:
             try:
                 addDir(canal.nome.text.decode('utf8') + '  [COLOR red]' + canal_programa + '[/COLOR]', canal.link.text.decode('utf8'), 105, canal.logo.text.encode('utf8'), 1, False, programa_plot)
